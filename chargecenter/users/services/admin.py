@@ -11,4 +11,4 @@ def create_admin(data: dict):
         email=data.get("email"),
         password=data.get("password")
     )
-    return RegisterOutputSerializer(instance=admin)
+    return RegisterOutputSerializer(instance=admin).data
