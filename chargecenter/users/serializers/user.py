@@ -29,3 +29,10 @@ class RegisterInputSerializer(serializers.Serializer):
 
     class Meta:
         abstract = True
+
+
+class RegisterOutputSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BaseUser
+        fields = ("username", "email")
+
