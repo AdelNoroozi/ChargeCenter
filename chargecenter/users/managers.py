@@ -7,7 +7,8 @@ class BaseUserManager(BUM):
         if not username:
             raise ValueError(_("Users must have a username"))
 
-        user = self.model(email=self.normalize_email(email.lower()) if email else None, is_active=is_active,
+        user = self.model(username=username, email=self.normalize_email(email.lower()) if email else None,
+                          is_active=is_active,
                           is_admin=is_admin)
 
         if password is not None:
