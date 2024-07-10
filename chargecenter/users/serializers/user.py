@@ -5,7 +5,7 @@ from chargecenter.users.models import BaseUser
 from chargecenter.users.validators import number_validator, letter_validator, special_char_validator
 
 
-class RegisterInputSerializer(serializers.Serializer):
+class UserInputSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=150)
     email = serializers.EmailField(max_length=255)
     password = serializers.CharField(
@@ -31,7 +31,7 @@ class RegisterInputSerializer(serializers.Serializer):
         abstract = True
 
 
-class RegisterOutputSerializer(serializers.ModelSerializer):
+class UserOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
         fields = ("username", "email")

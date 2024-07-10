@@ -1,6 +1,6 @@
 from chargecenter.users.models import BaseUser
 from chargecenter.users.serializers import AdminInputSerializer
-from chargecenter.users.serializers.user import RegisterOutputSerializer
+from chargecenter.users.serializers.user import UserOutputSerializer
 
 
 def create_admin(data: dict):
@@ -11,4 +11,4 @@ def create_admin(data: dict):
         email=data.get("email"),
         password=data.get("password")
     )
-    return RegisterOutputSerializer(instance=admin).data
+    return UserOutputSerializer(instance=admin).data
