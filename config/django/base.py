@@ -76,16 +76,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': env.db('DATABASE_URL', default='psql://user:password@db:5432/pizzami'),
-# }
-
-
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='psql://user:password@127.0.0.1:5433/chargecenter'),
+    'default': env.db('DATABASE_URL', default='psql://user:password@127.0.0.1:5434/chargecenterdb'),
 }
 
 if os.environ.get('GITHUB_WORKFLOW'):
@@ -96,7 +88,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
             'USER': 'user',
             'PASSWORD': 'password',
             'HOST': 'db',
-            'PORT': '5433',
+            'PORT': '5434',
         }
     }
 
