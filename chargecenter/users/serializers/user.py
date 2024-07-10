@@ -29,7 +29,3 @@ class RegisterInputSerializer(serializers.Serializer):
 
     class Meta:
         abstract = True
-
-
-class AddAdminInputSerializer(RegisterInputSerializer):
-    email = serializers.CharField(max_length=150, required=False)
