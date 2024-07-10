@@ -29,3 +29,12 @@ def special_char_validator(password):
             _("password must include special char"),
             code="password_must_include_special_char"
         )
+
+
+def name_validator(name):
+    regex = re.compile(r'^[\p{L}\s]+$', re.UNICODE)
+    if not regex.match(name):
+        raise ValidationError(
+            _("Name must contain only letters and spaces, with no special characters or numbers."),
+            code="invalid_name"
+        )
