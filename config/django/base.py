@@ -18,6 +18,7 @@ LOCAL_APPS = [
     'chargecenter.common.apps.CommonConfig',
     'chargecenter.users.apps.UsersConfig',
     'chargecenter.authentication.apps.AuthenticationConfig',
+    'chargecenter.phones.apps.PhonesConfig',
 ]
 
 THIRD_PARTY_APPS = [
@@ -28,6 +29,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'drf_spectacular',
     'django_extensions',
+    'phonenumber_field'
 ]
 
 INSTALLED_APPS = [
