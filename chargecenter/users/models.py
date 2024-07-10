@@ -14,7 +14,7 @@ class BaseUser(TimeStampedBaseModel, AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
     username = models.CharField(max_length=150, unique=True, verbose_name=_("username"))
     email = models.EmailField(verbose_name=_("email"),
-                              unique=True)
+                              unique=True, blank=True, null=True)
     is_admin = models.BooleanField(default=False, verbose_name=_("is_admin"))
 
     objects = BaseUserManager()
@@ -32,7 +32,7 @@ class BaseUser(TimeStampedBaseModel, AbstractBaseUser, PermissionsMixin):
         verbose_name = _("User")
         verbose_name_plural = _("Users")
         indexes = [
-            models.Index(fields=["email"])
+            models.Index(fields=["username"])
         ]
 
 
