@@ -1,4 +1,5 @@
 import re
+import regex as re1
 
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -32,7 +33,7 @@ def special_char_validator(password):
 
 
 def name_validator(name):
-    regex = re.compile(r'^[\p{L}\s]+$', re.UNICODE)
+    regex = re1.compile(r'^[\p{L}\s]+$', re.UNICODE)
     if not regex.match(name):
         raise ValidationError(
             _("Name must contain only letters and spaces, with no special characters or numbers."),

@@ -14,6 +14,6 @@ def create_salesperson(data: dict):
         email=data.get("email"),
         password=data.get("password")
     )
-    salesperson = create_salesperson_selector(user=user_obj, first_name=data.pop("first name"),
+    salesperson = create_salesperson_selector(user=user_obj, first_name=data.pop("first_name"),
                                               last_name=data.pop("last_name"))
     return SalesPersonOutputSerializer(instance=salesperson).data
