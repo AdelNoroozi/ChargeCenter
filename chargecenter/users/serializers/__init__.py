@@ -1,2 +1,3 @@
 from chargecenter.users.serializers.admin import AdminInputSerializer
 from chargecenter.users.serializers.salesperson import SalesPersonInputSerializer
+from chargecenter.users.serializers.salesperson import SalesPersonOutputSerializer
