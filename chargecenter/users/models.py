@@ -12,13 +12,14 @@ from chargecenter.users.managers import BaseUserManager
 
 class BaseUser(TimeStampedBaseModel, AbstractBaseUser, PermissionsMixin):
     id = models.UUIDField(primary_key=True, editable=False, default=uuid.uuid4)
+    username = models.CharField(max_length=150, unique=True, verbose_name=_("username"))
     email = models.EmailField(verbose_name=_("email"),
                               unique=True)
     is_admin = models.BooleanField(default=False, verbose_name=_("is_admin"))
 
     objects = BaseUserManager()
 
-    USERNAME_FIELD = "email"
+    USERNAME_FIELD = "username"
 
     def __str__(self):
         return self.email

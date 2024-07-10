@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='psql://user:password@127.0.0.1:5434/chargecenterdb'),
+    'default': env.db('DATABASE_URL', default='psql://user:password@127.0.0.1:5433/chargecenterdb'),
 }
 
 if os.environ.get('GITHUB_WORKFLOW'):
@@ -88,7 +88,7 @@ if os.environ.get('GITHUB_WORKFLOW'):
             'USER': 'user',
             'PASSWORD': 'password',
             'HOST': 'db',
-            'PORT': '5434',
+            'PORT': '5433',
         }
     }
 
