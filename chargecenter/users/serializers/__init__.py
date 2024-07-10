@@ -1,0 +1,1 @@
+from chargecenter.users.serializers.salesperson import AddAdminInputSerializer
