@@ -34,3 +34,4 @@ phonenumbers==8.13.40
 regex==2024.5.15
 
 factory-boy==3.2.1
+locust==2.29.1
