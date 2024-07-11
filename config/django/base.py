@@ -19,6 +19,7 @@ LOCAL_APPS = [
     'chargecenter.users.apps.UsersConfig',
     'chargecenter.authentication.apps.AuthenticationConfig',
     'chargecenter.phones.apps.PhonesConfig',
+    'chargecenter.transactions.apps.TransactionsConfig',
 ]
 
 THIRD_PARTY_APPS = [
