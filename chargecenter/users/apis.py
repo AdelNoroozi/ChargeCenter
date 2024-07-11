@@ -1,29 +1,32 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_jwt.permissions import IsSuperUser
 
 from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
-from chargecenter.users.serializers import RegisterInputSerializer, RegisterOutputSerializer, ProfileOutputSerializer
-from chargecenter.users.services import register, get_profile
+from chargecenter.users.serializers import AdminInputSerializer, SalesPersonInputSerializer
+from chargecenter.users.services import create_admin, create_salesperson
 
 
-class ProfileApi(ApiAuthMixin, BasePermissionsMixin, APIView):
+class CreateAdminAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
     permissions = {
-        "GET": [IsAuthenticated]
+        "POST": [IsSuperUser]
     }
 
-    @extend_schema(responses=ProfileOutputSerializer)
-    def get(self, request):
-        profile_data = get_profile(user=request.user)
-        return Response(profile_data, status=status.HTTP_200_OK)
-
-
-class RegisterApi(APIView):
-
-    @extend_schema(request=RegisterInputSerializer, responses=RegisterOutputSerializer)
+    @extend_schema(tags=['Users:Admins'], request=AdminInputSerializer)
     def post(self, request):
-        register_data = register(data=request.data)
+        admin_data = create_admin(data=request.data)
+        return Response(admin_data, status=status.HTTP_201_CREATED)
 
-        return Response(register_data, status=status.HTTP_201_CREATED)
+
+class CreateSalesPersonAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
+    permissions = {
+        "POST": [IsAdminUser]
+    }
+
+    @extend_schema(tags=['Users:SalesPeople'], request=SalesPersonInputSerializer)
+    def post(self, request):
+        salesperson_data = create_salesperson(data=request.data)
+        return Response(salesperson_data, status=status.HTTP_201_CREATED)

@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .apis import ProfileApi, RegisterApi
+from chargecenter.users.apis import CreateAdminAPI, CreateSalesPersonAPI
 
 urlpatterns = [
-    path('register/', RegisterApi.as_view(), name="register"),
-    path('profile/', ProfileApi.as_view(), name="profile"),
+    path('add-admin/', CreateAdminAPI.as_view(), name="add_admin"),
+    path('add-salesperson/', CreateSalesPersonAPI.as_view(), name="add_salesperson")
 ]

@@ -1,3 +1,3 @@
-from chargecenter.users.serializers.user import RegisterInputSerializer
-from chargecenter.users.serializers.user import RegisterOutputSerializer
-from chargecenter.users.serializers.profile import ProfileOutputSerializer
+from chargecenter.users.serializers.admin import AdminInputSerializer
+from chargecenter.users.serializers.salesperson import SalesPersonInputSerializer
+from chargecenter.users.serializers.salesperson import SalesPersonOutputSerializer

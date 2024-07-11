@@ -18,6 +18,7 @@ LOCAL_APPS = [
     'chargecenter.common.apps.CommonConfig',
     'chargecenter.users.apps.UsersConfig',
     'chargecenter.authentication.apps.AuthenticationConfig',
+    'chargecenter.phones.apps.PhonesConfig',
 ]
 
 THIRD_PARTY_APPS = [
@@ -28,6 +29,7 @@ THIRD_PARTY_APPS = [
     'corsheaders',
     'drf_spectacular',
     'django_extensions',
+    'phonenumber_field'
 ]
 
 INSTALLED_APPS = [
@@ -76,16 +78,8 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
-
-# DATABASES = {
-#     'default': env.db('DATABASE_URL', default='psql://user:password@db:5432/pizzami'),
-# }
-
-
 DATABASES = {
-    'default': env.db('DATABASE_URL', default='psql://user:password@127.0.0.1:5433/chargecenter'),
+    'default': env.db('DATABASE_URL', default='psql://user:password@127.0.0.1:5433/chargecenterdb'),
 }
 
 if os.environ.get('GITHUB_WORKFLOW'):
