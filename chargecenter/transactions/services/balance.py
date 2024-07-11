@@ -10,6 +10,6 @@ def create_balance_transaction(user: BaseUser, data: dict):
     serializer = IncreaseBalanceSerializer(data=data)
     serializer.is_valid(raise_exception=True)
     salesperson = user.salesperson
-    transaction_obj = create_transaction(salesperson=salesperson, amount=serializer.data.get("amount"))
+    transaction_obj = create_transaction(salesperson=salesperson, amount=serializer.data.get("amount"), is_charge=False)
     create_balance(transaction=transaction_obj)
     return TransactionOutputSerializer(instance=transaction_obj, context={"full_access": False}).data
