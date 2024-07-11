@@ -3,3 +3,4 @@ from chargecenter.transactions.serializers.balance import BalanceTransactionPriv
 from chargecenter.transactions.serializers.balance import BalanceTransactionPublicSerializer
 from chargecenter.transactions.serializers.balance import ConfirmBalanceTransactionSerializer
 from chargecenter.transactions.serializers.transaction import TransactionOutputSerializer
+from chargecenter.transactions.serializers.charge import CreateChargeSerializer
