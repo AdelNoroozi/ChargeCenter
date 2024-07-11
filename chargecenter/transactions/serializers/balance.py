@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from chargecenter.transactions.models import Transaction
+from chargecenter.transactions.models import BalanceTransaction
 
 
 class IncreaseBalanceSerializer(serializers.Serializer):
@@ -9,11 +9,11 @@ class IncreaseBalanceSerializer(serializers.Serializer):
 
 class BalanceTransactionPrivateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Transaction
+        model = BalanceTransaction
         exclude = ("transaction_obj",)
 
 
 class BalanceTransactionPublicSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Transaction
+        model = BalanceTransaction
         exclude = ("transaction_obj", "confirmed_by")
