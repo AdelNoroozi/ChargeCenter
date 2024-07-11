@@ -17,3 +17,7 @@ class BalanceTransactionPublicSerializer(serializers.ModelSerializer):
     class Meta:
         model = BalanceTransaction
         exclude = ("transaction_obj", "confirmed_by")
+
+
+class ConfirmBalanceTransactionSerializer(serializers.Serializer):
+    balance = serializers.UUIDField()
