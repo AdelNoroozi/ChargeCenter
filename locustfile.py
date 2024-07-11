@@ -18,7 +18,7 @@ class TransactionsUser(HttpUser):
     balance_transactions2 = []
 
     salesperson1 = SalesPerson.objects.filter(user__username="jamshid").first()
-    salesperson2 = SalesPerson.objects.filter(user__username="hosein").first()
+    salesperson2 = SalesPerson.objects.filter(user__username="Hosein").first()
     initial_salesperson1_balance = 0
     initial_salesperson2_balance = 0
     charge_transaction_count1 = 0
@@ -58,7 +58,7 @@ class TransactionsUser(HttpUser):
 
     def login_sales2(self):
         response = self.client.post("/api/auth/jwt/login/", {
-            "username": "hosein",
+            "username": "Hosein",
             "password": "stringstr123@"
         })
         self.sales2_token = response.json().get("access")
@@ -72,7 +72,7 @@ class TransactionsUser(HttpUser):
     @task
     def confirm_balance_transaction(self):
         for balance_transaction in self.balance_transactions1 + self.balance_transactions2:
-            status_code = self.confirm_balance_request(balance_transaction)
+            status_code = self.confirm_balance_request(balance_transaction.id)
             assert status_code == 200
             if status_code == 200:
                 if balance_transaction in self.balance_transactions1:
