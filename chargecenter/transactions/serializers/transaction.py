@@ -12,12 +12,12 @@ class TransactionOutputSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = "__all__"
 
-    def get_concrete_obj(self):
-        if self.instance.is_charge:
+    def get_concrete_obj(self, obj):
+        if obj.is_charge:
             pass
         else:
             if self.context.get("full_access"):
-                return BalanceTransactionPrivateSerializer(instance=self.instance.concrete_balance_obj)
+                return BalanceTransactionPrivateSerializer(instance=obj.concrete_balance_obj).data
             else:
-                return BalanceTransactionPublicSerializer(instance=self.instance.concrete_balance_obj)
+                return BalanceTransactionPublicSerializer(instance=obj.concrete_balance_obj).data
 
