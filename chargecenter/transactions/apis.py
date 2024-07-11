@@ -6,8 +6,9 @@ from rest_framework.views import APIView
 
 from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
 from chargecenter.authentication.permissions import IsSalesPerson
-from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer
-from chargecenter.transactions.services import create_balance_transaction
+from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer, \
+    ChargeInputSerializer
+from chargecenter.transactions.services import create_balance_transaction, create_charge_transaction
 from chargecenter.transactions.services.balance import confirm_balance_transaction
 
 
@@ -18,8 +19,8 @@ class CreateBalanceTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
 
     @extend_schema(tags=['transactions:balance'], request=IncreaseBalanceSerializer)
     def post(self, request):
-        admin_data = create_balance_transaction(user=request.user, data=request.data)
-        return Response(admin_data, status=status.HTTP_201_CREATED)
+        data = create_balance_transaction(user=request.user, data=request.data)
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class ConfirmBalanceTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
@@ -31,3 +32,14 @@ class ConfirmBalanceTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
     def patch(self, request):
         confirm_balance_transaction(admin=request.user, data=request.data)
         return Response({"message": "done"}, status=status.HTTP_200_OK)
+
+
+class CreateChargeTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
+    permissions = {
+        "POST": [IsSalesPerson]
+    }
+
+    @extend_schema(tags=['transactions:charge'], request=ChargeInputSerializer)
+    def post(self, request):
+        data = create_charge_transaction(user=request.user, data=request.data)
+        return Response(data, status=status.HTTP_201_CREATED)
