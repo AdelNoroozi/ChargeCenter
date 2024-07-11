@@ -24,7 +24,8 @@ def create_balance_transaction(user: BaseUser, data: dict):
 def confirm_balance_transaction(admin: BaseUser, data: dict):
     serializer = ConfirmBalanceTransactionSerializer(data=data)
     serializer.is_valid(raise_exception=True)
-    balance_transaction = get_object_or_404(BalanceTransaction, id=serializer.validated_data.get("balance"))
+    balance_transaction = get_object_or_404(BalanceTransaction, id=serializer.validated_data.get("balance"),
+                                            is_confirmed=False)
     balance_transaction.is_confirmed = True
     balance_transaction.confirmed_by = admin
     balance_transaction.save()
