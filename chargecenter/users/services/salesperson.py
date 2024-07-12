@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import F
 from rest_framework.exceptions import ValidationError
 
 from chargecenter.users.models import BaseUser, SalesPerson
@@ -24,5 +25,5 @@ def update_salesperson_balance(salesperson: SalesPerson, amount: int):
     new_amount = salesperson.balance + amount
     if new_amount < 0:
         raise ValidationError("not enough balance")
-    salesperson.balance = new_amount
-    salesperson.save()
+    SalesPerson.objects.filter(id=salesperson.id).update(balance=F("balance") + amount)
+    salesperson.refresh_from_db()
