@@ -1,15 +1,27 @@
 import os
+import threading
+import time
 
 import django
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.base")
 django.setup()
 
+from django.db.models import Sum
+
+from chargecenter.transactions.models import Transaction
+
 from django.utils import timezone
 from locust import HttpUser, task, TaskSet
 
 from chargecenter.transactions.selectors import create_transaction, create_balance
 from chargecenter.users.models import SalesPerson
+
+user_counter = 0
+user_counter_lock = threading.Lock()
+
+start_time = None
+start_time = threading.Lock()
 
 
 class TransactionsTask(TaskSet):
@@ -27,15 +39,21 @@ class TransactionsTask(TaskSet):
     charge_transaction_count2 = 0
     balance_transaction_count1 = 0
     balance_transaction_count2 = 0
-    start_time = None
 
     def on_start(self):
+        global user_counter
+        global start_time
+
+        if user_counter == 0:
+            start_time = timezone.now()
+
+        self.initial_salesperson1_balance = self.salesperson1.balance
+        self.initial_salesperson2_balance = self.salesperson2.balance
+
         self.login_admin()
         self.login_sales1()
         self.login_sales2()
-        self.initial_salesperson1_balance = self.salesperson1.balance
-        self.initial_salesperson2_balance = self.salesperson2.balance
-        self.start_time = timezone.now()
+
         for _ in range(10):
             transaction1 = create_transaction(salesperson=self.salesperson1,
                                               amount=1000, is_charge=False)
@@ -45,6 +63,8 @@ class TransactionsTask(TaskSet):
             # balance_transaction2 = create_balance(transaction=transaction2)
             self.balance_transactions1.append(balance_transaction1)
             # self.balance_transactions2.append(balance_transaction2)
+        with user_counter_lock:
+            user_counter += 1
 
     def login_admin(self):
         response = self.client.post("/api/auth/jwt/login/", {
@@ -101,29 +121,29 @@ class TransactionsTask(TaskSet):
         #     self.charge_transaction_count2 += 1
 
     def on_stop(self):
-        pass
-        # time.sleep(0.1)
-        # end_time = timezone.now()
-        # print(self.start_time)
-        # print(end_time)
-        # sum_of_balance_increase1 = Transaction.objects.filter(created_at__gte=self.start_time, created_at__lt=end_time,
-        #                                                       is_charge=False, status=Transaction.DONE). \
-        #     aggregate(sum_of_balance=Sum("amount"))["sum_of_balance"]
-        # sum_of_charge1 = Transaction.objects.filter(created_at__gte=self.start_time, created_at__lt=end_time,
-        #                                             is_charge=True). \
-        #     aggregate(sum_of_charge=Sum("amount"))["sum_of_charge"]
-        # expected_final_balance1 = self.initial_salesperson1_balance + sum_of_balance_increase1 - sum_of_charge1
-        # self.salesperson1.refresh_from_db()
-        # final_balance1 = self.salesperson1.balance
-        # print(expected_final_balance1)
-        # print(final_balance1)
-        # assert final_balance1 == expected_final_balance1, f"Expected {expected_final_balance1}, got {final_balance1}"
+        global user_counter
+        global start_time
 
-        # expected_final_balance2 = self.initial_salesperson2_balance + (2000 * self.balance_transaction_count1) - (
-        #         3 * self.charge_transaction_count1)
-        # self.salesperson2.refresh_from_db()
-        # final_balance2 = self.salesperson2.balance
-        # assert final_balance2 == expected_final_balance2, f"Expected {expected_final_balance1}, got {final_balance1}"
+        user_counter -= 1
+
+        if user_counter == 0:
+            time.sleep(0.1)
+            end_time = timezone.now()
+            sum_of_balance_increase1 = Transaction.objects.filter(
+                created_at__gte=start_time, created_at__lt=end_time,
+                is_charge=False, status=Transaction.DONE
+            ).aggregate(sum_of_balance=Sum("amount"))["sum_of_balance"]
+            sum_of_charge1 = Transaction.objects.filter(
+                created_at__gte=start_time, created_at__lt=end_time,
+                is_charge=True
+            ).aggregate(sum_of_charge=Sum("amount"))["sum_of_charge"]
+            expected_final_balance = self.initial_salesperson1_balance + sum_of_balance_increase1 - sum_of_charge1
+            self.salesperson1.refresh_from_db()
+            final_balance = self.salesperson1.balance
+            print(expected_final_balance)
+            print(final_balance)
+            assert final_balance == expected_final_balance, \
+                f"Expected {expected_final_balance}, got {final_balance}"
 
 
 class TransactionUser(HttpUser):
