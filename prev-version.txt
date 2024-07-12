@@ -1,0 +1,34 @@
+def update_salesperson_balance(salesperson: SalesPerson, amount: int):
+    new_amount = salesperson.balance + amount
+    if new_amount < 0:
+        raise ValidationError("not enough balance")
+    salesperson.balance = new_amount
+    salesperson.save()
+
+
+@transaction.atomic
+def create_charge_transaction(user: BaseUser, data: dict):
+    serializer = ChargeInputSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    salesperson = user.salesperson
+    update_salesperson_balance(salesperson=salesperson, amount=-(serializer.validated_data.get("amount")))
+    transaction_obj = create_transaction(salesperson=salesperson, amount=serializer.validated_data.get("amount"),
+                                         is_charge=True)
+    phone_number = get_object_or_404(PhoneNumber, id=serializer.validated_data.get("phone_number"))
+    create_charge(transaction=transaction_obj, phone_number=phone_number.number)
+    return TransactionOutputSerializer(instance=transaction_obj).data
+
+
+@transaction.atomic
+def confirm_balance_transaction(admin: BaseUser, data: dict):
+    serializer = ConfirmBalanceTransactionSerializer(data=data)
+    serializer.is_valid(raise_exception=True)
+    balance_transaction = get_object_or_404(BalanceTransaction, id=serializer.validated_data.get("balance"),
+                                            is_confirmed=False)
+    balance_transaction.is_confirmed = True
+    balance_transaction.confirmed_by = admin
+    balance_transaction.save()
+    transaction_obj = balance_transaction.transaction_obj
+    transaction_obj.status = Transaction.DONE
+    update_salesperson_balance(salesperson=transaction_obj.salesperson, amount=transaction_obj.amount)
+    transaction_obj.save()

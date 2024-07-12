@@ -5,7 +5,7 @@ from chargecenter.transactions.models import BalanceTransaction, Transaction
 from chargecenter.transactions.selectors import create_transaction, create_balance
 from chargecenter.transactions.serializers import TransactionOutputSerializer, IncreaseBalanceSerializer, \
     ConfirmBalanceTransactionSerializer
-from chargecenter.users.models import BaseUser
+from chargecenter.users.models import BaseUser, SalesPerson
 from chargecenter.users.services import update_salesperson_balance
 
 
@@ -31,5 +31,6 @@ def confirm_balance_transaction(admin: BaseUser, data: dict):
     balance_transaction.save()
     transaction_obj = balance_transaction.transaction_obj
     transaction_obj.status = Transaction.DONE
-    update_salesperson_balance(salesperson=transaction_obj.salesperson, amount=transaction_obj.amount)
+    salesperson = SalesPerson.objects.select_for_update().get(id=transaction_obj.salesperson.id)
+    update_salesperson_balance(salesperson=salesperson, amount=transaction_obj.amount)
     transaction_obj.save()
