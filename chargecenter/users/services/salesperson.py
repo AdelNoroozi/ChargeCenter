@@ -22,6 +22,7 @@ def create_salesperson(data: dict):
 
 
 def update_salesperson_balance(salesperson: SalesPerson, amount: int):
+    salesperson.refresh_from_db()
     new_amount = salesperson.balance + amount
     if new_amount < 0:
         raise ValidationError("not enough balance")
