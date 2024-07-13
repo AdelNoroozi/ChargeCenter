@@ -2,6 +2,7 @@ import os
 import time
 
 import django
+from django.db.models.deletion import RestrictedError
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.django.base")
 django.setup()
@@ -27,25 +28,33 @@ salesperson2 = SalesPerson()
 phone_number = PhoneNumber()
 
 
-@transaction.atomic
 def flush_test_data():
     global salesperson1
     global salesperson2
     global phone_number
 
     print("flushing test data")
-    transactions = Transaction.objects.filter(salesperson__in=[salesperson1, salesperson2])
-    BalanceTransaction.objects.filter(transaction_obj__in=transactions).delete()
-    ChargeTransaction.objects.filter(transaction_obj__in=transactions).delete()
-    transactions.delete()
-    user1 = salesperson1.user
-    user2 = salesperson2.user
-    salesperson1.delete()
-    salesperson2.delete()
-    user1.delete()
-    user2.delete()
-    phone_number.delete()
-    BaseUser.objects.filter(username="test_admin").delete()
+
+    retry = True
+    while retry:
+        try:
+            transactions = Transaction.objects.filter(salesperson__in=[salesperson1, salesperson2])
+            BalanceTransaction.objects.filter(transaction_obj__in=transactions).delete()
+            ChargeTransaction.objects.filter(transaction_obj__in=transactions).delete()
+            transactions.delete()
+            PhoneNumber.objects.filter(id=phone_number.id).delete()
+            user1_id = salesperson1.user.id
+            user2_id = salesperson2.user.id
+            SalesPerson.objects.filter(id=salesperson1.id).delete()
+            SalesPerson.objects.filter(id=salesperson2.id).delete()
+            BaseUser.objects.filter(id=user1_id).delete()
+            BaseUser.objects.filter(id=user2_id).delete()
+            BaseUser.objects.filter(username="test_admin").delete()
+            retry = False
+        except RestrictedError:
+            print("db restriction occurred, retrying...")
+            time.sleep(0.1)
+
     print("test data flushed")
 
 
@@ -55,8 +64,13 @@ def get_transaction_values(salesperson, end_time, initial_salesperson_balance):
         status=Transaction.DONE
     ).aggregate(sum_of_balance=Sum("amount"))["sum_of_balance"]
     sum_of_charge = Transaction.objects.filter(
-        salesperson=salesperson, created_at__gte=start_time, created_at__lt=end_time, is_charge=True
+        salesperson=salesperson, created_at__gte=start_time, created_at__lt=end_time, is_charge=True,
+        status=Transaction.DONE
     ).aggregate(sum_of_charge=Sum("amount"))["sum_of_charge"]
+    if sum_of_charge is None:
+        sum_of_charge = 0
+    if sum_of_balance_increase is None:
+        sum_of_balance_increase = 0
     expected_final_balance = initial_salesperson_balance + sum_of_balance_increase - sum_of_charge
     salesperson.refresh_from_db()
     final_balance = salesperson.balance

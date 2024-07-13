@@ -15,7 +15,10 @@ def create_charge_transaction(user: BaseUser, data: dict):
     transaction_obj = create_transaction(salesperson=salesperson, amount=serializer.validated_data.get("amount"),
                                          is_charge=True)
     phone_number = get_object_or_404(PhoneNumber, id=serializer.validated_data.get("phone_number"))
-    create_charge(transaction=transaction_obj, phone_number=phone_number.number)
+    charge = create_charge(transaction=transaction_obj, phone_number=phone_number.number)
+    request_for_charge(amount=serializer.validated_data.get("amount"), phone_number=str(phone_number.number))
+    charge.transaction_obj.status = Transaction.DONE
+    charge.transaction_obj.save()
     return TransactionOutputSerializer(instance=transaction_obj).data
 
 
