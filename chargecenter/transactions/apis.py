@@ -1,6 +1,6 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
-from rest_framework.permissions import IsAdminUser
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -8,7 +8,7 @@ from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
 from chargecenter.authentication.permissions import IsSalesPerson
 from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer, \
     ChargeInputSerializer
-from chargecenter.transactions.services import create_balance_transaction, create_charge_transaction
+from chargecenter.transactions.services import create_balance_transaction, create_charge_transaction, get_transactions
 from chargecenter.transactions.services.balance import confirm_balance_transaction
 
 
@@ -43,3 +43,14 @@ class CreateChargeTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
     def post(self, request):
         data = create_charge_transaction(user=request.user, data=request.data)
         return Response(data, status=status.HTTP_201_CREATED)
+
+
+class TransactionsAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
+    permissions = {
+        "GET": [IsAuthenticated]
+    }
+
+    @extend_schema(tags=["transactions"])
+    def get(self, request):
+        data = get_transactions(user=request.user)
+        return Response(data=data, status=status.HTTP_200_OK)
