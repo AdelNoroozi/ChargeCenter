@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
 from chargecenter.phones.serializers import PhoneNumberInputSerializer
-from chargecenter.phones.services import get_phone_numbers, create_phone_number
+from chargecenter.phones.services import get_phone_numbers, create_phone_number, delete_phone_number
 
 
 class PhoneNumbersAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
@@ -28,3 +28,17 @@ class PhoneNumbersAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
     def post(self, request):
         data = create_phone_number(data=request.data)
         return Response(data=data, status=status.HTTP_201_CREATED)
+
+
+class PhoneNumberAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
+    permissions = {
+        "DELETE": [IsAdminUser]
+    }
+
+    @extend_schema(
+        tags=['Phone Numbers'], responses={204: ''}
+    )
+    def delete(self, request, **kwargs):
+        _id = kwargs.get("id")
+        delete_phone_number(phone_number_id=_id)
+        return Response({}, status=status.HTTP_204_NO_CONTENT)

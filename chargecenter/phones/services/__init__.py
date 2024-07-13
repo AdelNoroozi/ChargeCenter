@@ -1,1 +1,1 @@
-from chargecenter.phones.services.phone_number import get_phone_numbers, create_phone_number
+from chargecenter.phones.services.phone_number import get_phone_numbers, create_phone_number, delete_phone_number
