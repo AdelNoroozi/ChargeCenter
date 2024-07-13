@@ -1,6 +1,7 @@
 import re
-import regex as re1
+import uuid
 
+import regex as re1
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -39,3 +40,11 @@ def name_validator(name):
             _("Name must contain only letters and spaces, with no special characters or numbers."),
             code="invalid_name"
         )
+
+
+def is_valid_uuid(val):
+    try:
+        uuid.UUID(str(val))
+        return True
+    except ValueError:
+        return False

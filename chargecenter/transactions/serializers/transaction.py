@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from chargecenter.common.serializers import PaginatedOutputSerializer
 from chargecenter.transactions.models import Transaction
 from chargecenter.transactions.serializers import BalanceTransactionPrivateSerializer, \
     BalanceTransactionPublicSerializer
@@ -22,3 +23,11 @@ class TransactionOutputSerializer(serializers.ModelSerializer):
             else:
                 return BalanceTransactionPublicSerializer(instance=obj.concrete_balance_obj).data
 
+
+class TransactionPaginatedOutputSerializer(PaginatedOutputSerializer):
+    """only for documentation purposes"""
+
+    class TransactionsResultsOutputSerializer(PaginatedOutputSerializer.ResultsOutputSerializer):
+        data = TransactionOutputSerializer(many=True)
+
+    results = TransactionsResultsOutputSerializer(many=False)

@@ -2,7 +2,7 @@ from django.core.validators import MinLengthValidator
 from rest_framework import serializers
 
 from chargecenter.users.models import BaseUser
-from chargecenter.users.validators import number_validator, letter_validator, special_char_validator
+from chargecenter.common.validators import number_validator, letter_validator, special_char_validator
 
 
 class UserInputSerializer(serializers.Serializer):
