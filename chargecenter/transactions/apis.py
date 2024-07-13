@@ -53,7 +53,11 @@ class TransactionsAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
 
     @extend_schema(tags=["transactions"])
     def get(self, request):
-        data = get_transactions(user=request.user)
+        query_dict = request.GET
+        user = request.user
+        if not user.is_admin and "concrete_balance_obj__confirmed_by" in query_dict:
+            return Response({"error": "restricted request"}, status=status.HTTP_403_FORBIDDEN)
+        data = get_transactions(user=user, query_dict=query_dict)
         paginator = FullPagination()
         paginated_data = paginator.paginate_queryset(queryset=data, request=request)
         return paginator.get_paginated_response(data={"ok": True, "data": paginated_data, "status": status.HTTP_200_OK})
