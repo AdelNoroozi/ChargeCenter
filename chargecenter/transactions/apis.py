@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
 from chargecenter.api.pagination import FullPagination
 from chargecenter.authentication.permissions import IsSalesPerson
+from chargecenter.transactions.docs import GET_TRANSACTIONS_PARAMETERS, GET_TRANSACTIONS_RESPONSES
 from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer, \
     ChargeInputSerializer
 from chargecenter.transactions.services import create_balance_transaction, create_charge_transaction, get_transactions
@@ -51,7 +52,7 @@ class TransactionsAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
         "GET": [IsAuthenticated]
     }
 
-    @extend_schema(tags=["transactions"])
+    @extend_schema(tags=["transactions"], parameters=GET_TRANSACTIONS_PARAMETERS, responses=GET_TRANSACTIONS_RESPONSES)
     def get(self, request):
         query_dict = request.GET
         user = request.user
