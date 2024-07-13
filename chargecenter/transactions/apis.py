@@ -8,7 +8,7 @@ from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
 from chargecenter.api.pagination import FullPagination
 from chargecenter.authentication.permissions import IsSalesPerson
 from chargecenter.transactions.docs import GET_TRANSACTIONS_PARAMETERS, GET_TRANSACTIONS_RESPONSES, \
-    CREATE_BALANCE_TRANSACTIONS_RESPONSES, CONFIRM_BALANCE_TRANSACTIONS_RESPONSES
+    CREATE_BALANCE_TRANSACTIONS_RESPONSES, CONFIRM_BALANCE_TRANSACTIONS_RESPONSES, CREATE_CHARGE_TRANSACTIONS_RESPONSES
 from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer, \
     ChargeInputSerializer
 from chargecenter.transactions.services import create_balance_transaction, create_charge_transaction, get_transactions
@@ -44,7 +44,8 @@ class CreateChargeTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
         "POST": [IsSalesPerson]
     }
 
-    @extend_schema(tags=['transactions:charge'], request=ChargeInputSerializer)
+    @extend_schema(tags=['transactions:charge'], request=ChargeInputSerializer,
+                   responses=CREATE_CHARGE_TRANSACTIONS_RESPONSES)
     def post(self, request):
         data = create_charge_transaction(user=request.user, data=request.data)
         return Response(data, status=status.HTTP_201_CREATED)
