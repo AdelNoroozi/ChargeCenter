@@ -41,6 +41,19 @@ services:
     volumes:
       - redis-data:/data
 
+  mock_charge_flask:
+    image: python:3.9.9-slim
+    working_dir: /app
+    volumes:
+      - ./services:/app
+    ports:
+      - "8822:8822"
+    command: >
+      sh -c "
+        pip install -r requirements.txt &&
+        gunicorn --workers 3 --worker-class gevent --bind 0.0.0.0:8822 wsgi:app
+      "
+
 volumes:
     postgresql-data:
     redis-data:
