@@ -1,5 +1,7 @@
+import time
+
 from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from flask_restful import Resource, Api
 
 app = Flask(__name__)
@@ -8,8 +10,7 @@ api = Api(app)
 jwt = JWTManager(app)
 
 """
-this APIs are designed to mock a charge service API's basic behaviors. 
-more info about the original API: https://podium.ir/s/mobile-payment/docs?code=
+this APIs are designed to mock a charge service API's basic behaviors.
 """
 
 
@@ -17,14 +18,30 @@ class GetAccessToken(Resource):
 
     def post(self):
         headers = dict(request.headers)
-        print(headers)
         if headers.get("Token") != "ChArG3C3nT3Rt0k3n" or headers.get("Token-Issuer") != "1":
             return {"error": f"token error"}, 403
         access_token = create_access_token(identity="ChargeCenter")
         return jsonify(access_token=access_token)
 
 
+class ChargeAPI(Resource):
+
+    @jwt_required()
+    def post(self):
+        data = request.get_json()
+        if "amount" not in data:
+            return {"error": "missing field amount"}
+        if "phone_number" not in data:
+            return {"error": "missing field phone_number"}
+        if type(data.get("amount")) != int:
+            return {"error": "amount must be an integer"}
+        # fake charging process
+        time.sleep(0.5)
+        return {"message": "done"}
+
+
 api.add_resource(GetAccessToken, '/apis/token/')
+api.add_resource(ChargeAPI, '/apis/charge/')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8822)
