@@ -1,1 +1,1 @@
-from chargecenter.phones.serializers.phone import PhoneNumberInputSerializer, PhoneNumberOutputSerializer
+from chargecenter.phones.serializers.phone_number import PhoneNumberInputSerializer, PhoneNumberOutputSerializer
