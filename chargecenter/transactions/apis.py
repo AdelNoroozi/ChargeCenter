@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
+from chargecenter.api.pagination import FullPagination
 from chargecenter.authentication.permissions import IsSalesPerson
 from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer, \
     ChargeInputSerializer
@@ -53,4 +54,7 @@ class TransactionsAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
     @extend_schema(tags=["transactions"])
     def get(self, request):
         data = get_transactions(user=request.user)
-        return Response(data=data, status=status.HTTP_200_OK)
+        paginator = FullPagination()
+        paginated_data = paginator.paginate_queryset(queryset=data, request=request)
+        return paginator.get_paginated_response(data={"ok": True, "data": paginated_data, "status": status.HTTP_200_OK})
+
