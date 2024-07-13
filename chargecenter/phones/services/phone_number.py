@@ -4,4 +4,4 @@ from chargecenter.phones.serializers import PhoneNumberOutputSerializer
 
 def get_phone_numbers():
     phone_numbers = get_phone_numbers_selector()
-    return PhoneNumberOutputSerializer(phone_numbers).data
+    return PhoneNumberOutputSerializer(phone_numbers, many=True).data
