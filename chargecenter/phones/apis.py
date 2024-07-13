@@ -19,7 +19,7 @@ class PhoneNumbersAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
         tags=['Phone Numbers'], responses={200: ''}
     )
     def get(self, request):
-        data = get_phone_numbers()
+        data = get_phone_numbers(query_dict=request.GET)
         return Response(data=data, status=status.HTTP_200_OK)
 
     @extend_schema(

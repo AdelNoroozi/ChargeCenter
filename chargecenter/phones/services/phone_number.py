@@ -2,8 +2,9 @@ from chargecenter.phones.selectors import get_phone_numbers as get_phone_numbers
 from chargecenter.phones.serializers import PhoneNumberOutputSerializer, PhoneNumberInputSerializer
 
 
-def get_phone_numbers():
-    phone_numbers = get_phone_numbers_selector()
+def get_phone_numbers(query_dict: dict):
+    search_param = query_dict.get("search")
+    phone_numbers = get_phone_numbers_selector(search_param=search_param)
     return PhoneNumberOutputSerializer(phone_numbers, many=True).data
 
 
