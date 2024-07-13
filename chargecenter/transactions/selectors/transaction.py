@@ -1,3 +1,5 @@
+from django.db.models import QuerySet
+
 from chargecenter.transactions.models import Transaction
 from chargecenter.users.models import SalesPerson
 
@@ -11,3 +13,7 @@ def get_transactions(return_all: bool, salesperson: SalesPerson = None):
         return Transaction.objects.all()
     else:
         return Transaction.objects.filter(salesperson=salesperson)
+
+
+def order_transactions(queryset: QuerySet[Transaction], order_param: str):
+    return queryset.order_by(order_param)
