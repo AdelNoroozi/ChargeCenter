@@ -1,5 +1,3 @@
-import time
-
 from flask import Flask, request, jsonify
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from flask_restful import Resource, Api
@@ -30,18 +28,14 @@ class ChargeAPI(Resource):
     def post(self):
         data = request.get_json()
         if "amount" not in data:
-            return {"error": "missing field amount"}
+            return {"error": "missing field amount"}, 400
         if "phone_number" not in data:
-            return {"error": "missing field phone_number"}
+            return {"error": "missing field phone_number"}, 400
         if type(data.get("amount")) != int:
-            return {"error": "amount must be an integer"}
+            return {"error": "amount must be an integer"}, 400
         # fake charging process
-        time.sleep(0.5)
         return {"message": "done"}
 
 
 api.add_resource(GetAccessToken, '/apis/token/')
 api.add_resource(ChargeAPI, '/apis/charge/')
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8822)

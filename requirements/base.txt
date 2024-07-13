@@ -35,3 +35,4 @@ regex==2024.5.15
 
 factory-boy==3.2.1
 locust==2.29.1
+requests==2.32.3
