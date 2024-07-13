@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from chargecenter.users.models import SalesPerson
 from chargecenter.users.serializers.user import UserInputSerializer, UserOutputSerializer
-from chargecenter.users.validators import name_validator
+from chargecenter.common.validators import name_validator
 
 
 class SalesPersonInputSerializer(UserInputSerializer):
