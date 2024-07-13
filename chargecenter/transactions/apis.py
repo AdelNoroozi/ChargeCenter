@@ -7,7 +7,8 @@ from rest_framework.views import APIView
 from chargecenter.api.mixins import ApiAuthMixin, BasePermissionsMixin
 from chargecenter.api.pagination import FullPagination
 from chargecenter.authentication.permissions import IsSalesPerson
-from chargecenter.transactions.docs import GET_TRANSACTIONS_PARAMETERS, GET_TRANSACTIONS_RESPONSES
+from chargecenter.transactions.docs import GET_TRANSACTIONS_PARAMETERS, GET_TRANSACTIONS_RESPONSES, \
+    CREATE_BALANCE_TRANSACTIONS_RESPONSES, CONFIRM_BALANCE_TRANSACTIONS_RESPONSES
 from chargecenter.transactions.serializers import IncreaseBalanceSerializer, ConfirmBalanceTransactionSerializer, \
     ChargeInputSerializer
 from chargecenter.transactions.services import create_balance_transaction, create_charge_transaction, get_transactions
@@ -19,7 +20,8 @@ class CreateBalanceTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
         "POST": [IsSalesPerson]
     }
 
-    @extend_schema(tags=['transactions:balance'], request=IncreaseBalanceSerializer)
+    @extend_schema(tags=['transactions:balance'], request=IncreaseBalanceSerializer,
+                   responses=CREATE_BALANCE_TRANSACTIONS_RESPONSES)
     def post(self, request):
         data = create_balance_transaction(user=request.user, data=request.data)
         return Response(data, status=status.HTTP_201_CREATED)
@@ -30,7 +32,8 @@ class ConfirmBalanceTransactionAPI(ApiAuthMixin, BasePermissionsMixin, APIView):
         "PATCH": [IsAdminUser]
     }
 
-    @extend_schema(tags=['transactions:balance'], request=ConfirmBalanceTransactionSerializer)
+    @extend_schema(tags=['transactions:balance'], request=ConfirmBalanceTransactionSerializer,
+                   responses=CONFIRM_BALANCE_TRANSACTIONS_RESPONSES)
     def patch(self, request):
         confirm_balance_transaction(admin=request.user, data=request.data)
         return Response({"message": "done"}, status=status.HTTP_200_OK)
