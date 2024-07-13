@@ -55,8 +55,13 @@ def get_transaction_values(salesperson, end_time, initial_salesperson_balance):
         status=Transaction.DONE
     ).aggregate(sum_of_balance=Sum("amount"))["sum_of_balance"]
     sum_of_charge = Transaction.objects.filter(
-        salesperson=salesperson, created_at__gte=start_time, created_at__lt=end_time, is_charge=True
+        salesperson=salesperson, created_at__gte=start_time, created_at__lt=end_time, is_charge=True,
+        status=Transaction.DONE
     ).aggregate(sum_of_charge=Sum("amount"))["sum_of_charge"]
+    if sum_of_charge is None:
+        sum_of_charge = 0
+    if sum_of_balance_increase is None:
+        sum_of_balance_increase = 0
     expected_final_balance = initial_salesperson_balance + sum_of_balance_increase - sum_of_charge
     salesperson.refresh_from_db()
     final_balance = salesperson.balance
