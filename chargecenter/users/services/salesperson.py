@@ -28,3 +28,8 @@ def update_salesperson_balance(salesperson: SalesPerson, amount: int):
         raise ValidationError("not enough balance")
     SalesPerson.objects.filter(id=salesperson.id).update(balance=F("balance") + amount)
     salesperson.refresh_from_db()
+
+
+def get_salesperson(user: BaseUser):
+    salesperson = user.salesperson
+    return SalesPersonOutputSerializer(salesperson).data

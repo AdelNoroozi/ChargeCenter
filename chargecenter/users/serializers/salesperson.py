@@ -15,4 +15,4 @@ class SalesPersonOutputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesPerson
-        fields = ("user", "first_name", "last_name")
+        fields = ("user", "first_name", "last_name", "balance")
