@@ -1,14 +1,12 @@
 #!/bin/sh
 echo "--> Waiting for db to be ready"
-./wait-for-it.sh db:5432
+./wait-for-it.sh db:5433
 
-# Apply database migrations
 echo "Apply database migrations"
 python manage.py makemigrations
 python manage.py migrate
-python manage.py collectstatic --clear --noinput
-python manage.py collectstatic --noinput
+#python manage.py collectstatic --clear --noinput
+#python manage.py collectstatic --noinput
 
-# Start server
 echo "--> Starting web process"
-gunicorn config.wsgi:application -b 0.0.0.0:8000
+gunicorn config.wsgi:application --workers=5 --threads=2 -b 0.0.0.0:8000

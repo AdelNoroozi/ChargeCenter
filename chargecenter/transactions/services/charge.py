@@ -14,8 +14,8 @@ from chargecenter.users.services import update_salesperson_balance
 
 
 def request_for_charge(amount: int, phone_number: str):
-    token_url = "http://localhost:8822/apis/token/"
-    charge_url = "http://localhost:8822/apis/charge/"
+    token_url = "http://mock_charge_flask:8822/apis/token/"
+    charge_url = "http://mock_charge_flask:8822/apis/charge/"
 
     token_headers = {
         "Token": "ChArG3C3nT3Rt0k3n",
