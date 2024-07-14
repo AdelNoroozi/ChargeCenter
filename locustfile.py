@@ -144,7 +144,7 @@ class TransactionsTask(TaskSet):
     def confirm_balance_transactions(self):
         admin_token = self.login_admin()
         for balance_transaction in self.balance_transactions:
-            status_code = self.client.patch(f"/api/transaction/confirm-balance/",
+            status_code = self.client.patch(f"/api/transactions/confirm-balance/",
                                             headers={"Authorization": f"Bearer {admin_token}"},
                                             data={"balance": balance_transaction.id}).status_code
             assert status_code == 200
@@ -154,13 +154,13 @@ class TransactionsTask(TaskSet):
         global phone_number
 
         sales1_token = self.login_sales(username="test_sales1")
-        response1 = self.client.post("/api/transaction/create-charge/",
+        response1 = self.client.post("/api/transactions/create-charge/",
                                      headers={"Authorization": f"Bearer {sales1_token}"},
                                      data={"phone_number": phone_number.id, "amount": 4})
         assert response1.status_code == 201
 
         sales2_token = self.login_sales(username="test_sales2")
-        response2 = self.client.post("/api/transaction/create-charge/",
+        response2 = self.client.post("/api/transactions/create-charge/",
                                      headers={"Authorization": f"Bearer {sales2_token}"},
                                      data={"phone_number": phone_number.id, "amount": 3})
         assert response2.status_code == 201
