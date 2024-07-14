@@ -1,5 +1,3 @@
-import json
-
 import requests
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -11,11 +9,12 @@ from chargecenter.transactions.selectors import create_transaction, create_charg
 from chargecenter.transactions.serializers import ChargeInputSerializer, TransactionOutputSerializer
 from chargecenter.users.models import BaseUser, SalesPerson
 from chargecenter.users.services import update_salesperson_balance
+from config.env import env
 
 
 def request_for_charge(amount: int, phone_number: str):
-    token_url = "http://mock_charge_flask:8822/apis/token/"
-    charge_url = "http://mock_charge_flask:8822/apis/charge/"
+    token_url = env("MOCK_CHARGE_SERVICE_TOKEN_URL", default="http://locahost:8822/apis/token/")
+    charge_url = env("MOCK_CHARGE_SERVICE_CHARGE_URL", default="http://locahost:8822/apis/charge/")
 
     token_headers = {
         "Token": "ChArG3C3nT3Rt0k3n",

@@ -20,6 +20,8 @@ services:
     command: docker/production_web_entrypoint.sh
     environment:
       - DATABASE_URL=psql://user:password@db:5432/chargecenterdb
+      - MOCK_CHARGE_SERVICE_TOKEN_URL=http://mock_charge_flask:8822/apis/token/
+      - MOCK_CHARGE_SERVICE_CHARGE_URL=http://mock_charge_flask:8822/apis/charge/
     volumes:
       - .:/app
     ports:
