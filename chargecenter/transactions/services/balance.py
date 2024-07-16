@@ -1,5 +1,5 @@
 from django.db import transaction
-from rest_framework.generics import get_object_or_404
+from django.http import Http404
 
 from chargecenter.transactions.models import BalanceTransaction, Transaction
 from chargecenter.transactions.selectors import create_transaction, create_balance
@@ -24,11 +24,13 @@ def create_balance_transaction(user: BaseUser, data: dict):
 def confirm_balance_transaction(admin: BaseUser, data: dict):
     serializer = ConfirmBalanceTransactionSerializer(data=data)
     serializer.is_valid(raise_exception=True)
-    balance_transaction = get_object_or_404(BalanceTransaction, id=serializer.validated_data.get("balance"),
-                                            is_confirmed=False)
-    balance_transaction.is_confirmed = True
-    balance_transaction.confirmed_by = admin
-    balance_transaction.save()
+    balance_transaction_qs = BalanceTransaction.objects.select_for_update().filter(
+        id=serializer.validated_data.get("balance"), is_confirmed=False)
+    if balance_transaction_qs.first() is None:
+        raise Http404()
+    else:
+        balance_transaction = balance_transaction_qs.first()
+    balance_transaction_qs.update(is_confirmed=True, confirmed_by=admin)
     transaction_obj = balance_transaction.transaction_obj
     transaction_obj.status = Transaction.DONE
     salesperson = SalesPerson.objects.select_for_update().get(id=transaction_obj.salesperson.id)
